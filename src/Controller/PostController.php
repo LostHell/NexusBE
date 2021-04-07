@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
+use App\Dto\Request\PostRequestDto;
 use App\Dto\Request\UserRequestDto;
-use App\Dto\Response\UserResponseDto;
+use App\Dto\Response\PostResponseDto;
+use App\Entity\Post;
 use App\Entity\User;
-use App\Repository\UserRepository;
+use App\Repository\PostRepository;
 use AutoMapperPlus\AutoMapperInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,16 +17,16 @@ use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * @Route("/user", name="user_")
- * Class UserController
+ * @Route("/post", name="post_")
+ * Class PostController
  * @package App\Controller
  */
-class UserController extends AbstractController
+class PostController extends AbstractController
 {
     /**
-     * @var UserRepository
+     * @var PostRepository
      */
-    private $userRepository;
+    private $postRepository;
 
     /**
      * @var ValidatorInterface
@@ -37,11 +39,11 @@ class UserController extends AbstractController
     private $mapper;
 
     public function __construct(
-        UserRepository $userRepository,
+        PostRepository $postRepository,
         ValidatorInterface $validator,
         AutoMapperInterface $mapper)
     {
-        $this->userRepository = $userRepository;
+        $this->postRepository = $postRepository;
         $this->validator = $validator;
         $this->mapper = $mapper;
     }
@@ -50,12 +52,12 @@ class UserController extends AbstractController
      * @Route("/", name="get_all", methods={"GET"})
      * @return Response
      */
-    public function getAllUsers(): Response
+    public function getAllPosts(): Response
     {
-        $users = $this->userRepository->getAllUsers();
-        $users = $this->mapper->mapMultiple($users, UserResponseDto::class);
+        $posts = $this->postRepository->getAllPosts();
+        $posts = $this->mapper->mapMultiple($posts, PostResponseDto::class);
 
-        return $this->json(['users' => $users], 200);
+        return $this->json(['posts' => $posts], 200);
     }
 
     /**
@@ -64,12 +66,12 @@ class UserController extends AbstractController
      * @return Response
      * @throws \AutoMapperPlus\Exception\UnregisteredMappingException
      */
-    public function getUserById(int $id): Response
+    public function getPostById(int $id): Response
     {
-        $user = $this->userRepository->getUserById($id);
-        $user = $this->mapper->map($user, UserResponseDto::class);
+        $post = $this->postRepository->getPostById($id);
+        $post = $this->mapper->map($post, PostResponseDto::class);
 
-        return $this->json(['user' => $user], 200);
+        return $this->json(['post' => $post], 200);
     }
 
     /**
@@ -80,26 +82,25 @@ class UserController extends AbstractController
      * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \AutoMapperPlus\Exception\UnregisteredMappingException
      */
-    public function createUser(Request $request): Response
+    public function createPost(Request $request): Response
     {
         /**
          * @var Serializer $serializer
          */
         $serializer = $this->get('serializer');
 
-        $newUser = $serializer->deserialize($request->getContent(), UserRequestDto::class, 'json');
-        $newUser = $this->mapper->map($newUser, User::class);
+        $post = $serializer->deserialize($request->getContent(), UserRequestDto::class, 'json');
+        $post = $this->mapper->map($post, User::class);
 
-        $errors = $this->validator->validate($newUser);
+//        $errors = $this->validator->validate($post);
+//
+//        if (count($errors)) {
+//            return $this->json($errors);
+//        }
+//
+//        $data = $this->postRepository->create($post);
 
-        if (count($errors) > 0) {
-            return $this->json($errors);
-        }
-
-        $user = $this->userRepository->create($newUser);
-        $user = $this->mapper->map($user, UserResponseDto::class);
-
-        return $this->json(['user' => $user], 201);
+        return $this->json(['post' => $post], 201);
     }
 
     /**
@@ -109,28 +110,25 @@ class UserController extends AbstractController
      * @return Response
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \AutoMapperPlus\Exception\UnregisteredMappingException
      */
-    public function updateUser(int $id, Request $request): Response
+    public function updatePost(int $id, Request $request): Response
     {
         /**
          * @var Serializer $serializer
          */
         $serializer = $this->get('serializer');
 
-        $currentUser = $serializer->deserialize($request->getContent(), UserRequestDto::class, 'json');
-        $currentUser = $this->mapper->map($currentUser, User::class);
+        $post = $serializer->deserialize($request->getContent(), Post::class, 'json');
 
-        $errors = $this->validator->validate($currentUser);
+        $errors = $this->validator->validate($post);
 
-        if (count($errors) > 0) {
+        if (count($errors)) {
             return $this->json($errors);
         }
 
-        $user = $this->userRepository->update($id, $currentUser);
-        $user = $this->mapper->map($user, UserResponseDto::class);
+        $data = $this->postRepository->update($id, $post);
 
-        return $this->json(['user' => $user], 201);
+        return $this->json(['post' => $data], 201);
     }
 
     /**
@@ -141,11 +139,11 @@ class UserController extends AbstractController
      * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \AutoMapperPlus\Exception\UnregisteredMappingException
      */
-    public function deleteUser(int $id): Response
+    public function deletePost(int $id): Response
     {
-        $user = $this->userRepository->delete($id);
-        $user = $this->mapper->map($user, UserResponseDto::class);
+        $post = $this->postRepository->delete($id);
+        $post = $this->mapper->map($post, PostResponseDto::class);
 
-        return $this->json(['user' => $user], 200);
+        return $this->json(['post' => $post], 200);
     }
 }
