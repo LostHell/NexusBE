@@ -2,13 +2,10 @@
 
 namespace App\Controller;
 
+use App\Dto\Assembly\PostAssembly;
 use App\Dto\Request\PostRequestDto;
-use App\Dto\Request\UserRequestDto;
-use App\Dto\Response\PostResponseDto;
-use App\Entity\Post;
-use App\Entity\User;
 use App\Repository\PostRepository;
-use AutoMapperPlus\AutoMapperInterface;
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,23 +26,30 @@ class PostController extends AbstractController
     private $postRepository;
 
     /**
+     * @var UserRepository
+     */
+    private $userRepository;
+
+    /**
      * @var ValidatorInterface
      */
     private $validator;
 
     /**
-     * @var AutoMapperInterface
+     * @var PostAssembly
      */
-    private $mapper;
+    private $postAssembly;
 
     public function __construct(
         PostRepository $postRepository,
+        UserRepository $userRepository,
         ValidatorInterface $validator,
-        AutoMapperInterface $mapper)
+        PostAssembly $postAssembly)
     {
         $this->postRepository = $postRepository;
+        $this->userRepository = $userRepository;
         $this->validator = $validator;
-        $this->mapper = $mapper;
+        $this->postAssembly = $postAssembly;
     }
 
     /**
@@ -55,7 +59,7 @@ class PostController extends AbstractController
     public function getAllPosts(): Response
     {
         $posts = $this->postRepository->getAllPosts();
-        $posts = $this->mapper->mapMultiple($posts, PostResponseDto::class);
+        $posts = $this->postAssembly->writeManyDTOs($posts);
 
         return $this->json(['posts' => $posts], 200);
     }
@@ -64,12 +68,11 @@ class PostController extends AbstractController
      * @Route("/{id}", name="get_by_id", methods={"GET"})
      * @param int $id
      * @return Response
-     * @throws \AutoMapperPlus\Exception\UnregisteredMappingException
      */
     public function getPostById(int $id): Response
     {
         $post = $this->postRepository->getPostById($id);
-        $post = $this->mapper->map($post, PostResponseDto::class);
+        $post = $this->postAssembly->writeOneDTO($post);
 
         return $this->json(['post' => $post], 200);
     }
@@ -80,7 +83,6 @@ class PostController extends AbstractController
      * @return Response
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \AutoMapperPlus\Exception\UnregisteredMappingException
      */
     public function createPost(Request $request): Response
     {
@@ -89,16 +91,20 @@ class PostController extends AbstractController
          */
         $serializer = $this->get('serializer');
 
-        $post = $serializer->deserialize($request->getContent(), UserRequestDto::class, 'json');
-        $post = $this->mapper->map($post, User::class);
+        $newPost = $serializer->deserialize($request->getContent(), PostRequestDto::class, 'json');
 
-//        $errors = $this->validator->validate($post);
-//
-//        if (count($errors)) {
-//            return $this->json($errors);
-//        }
-//
-//        $data = $this->postRepository->create($post);
+        $user = $this->userRepository->getUserById($newPost->getAuthorId());
+
+        $newPost = $this->postAssembly->readDTO($newPost, null, $user);
+
+        $errors = $this->validator->validate($newPost);
+
+        if (count($errors)) {
+            return $this->json($errors);
+        }
+
+        $post = $this->postRepository->create($newPost);
+        $post = $this->postAssembly->writeOneDTO($post);
 
         return $this->json(['post' => $post], 201);
     }
@@ -118,17 +124,23 @@ class PostController extends AbstractController
          */
         $serializer = $this->get('serializer');
 
-        $post = $serializer->deserialize($request->getContent(), Post::class, 'json');
+        $currentPost = $serializer->deserialize($request->getContent(), PostRequestDto::class, 'json');
 
-        $errors = $this->validator->validate($post);
+        $user = $this->userRepository->getUserById($currentPost->getAuthorId());
+        $post = $this->postRepository->getPostById($id);
+
+        $currentPost = $this->postAssembly->readDTO($currentPost, $post, $user);
+
+        $errors = $this->validator->validate($currentPost);
 
         if (count($errors)) {
             return $this->json($errors);
         }
 
-        $data = $this->postRepository->update($id, $post);
+        $post = $this->postRepository->update($id, $currentPost);
+        $post = $this->postAssembly->writeOneDTO($post);
 
-        return $this->json(['post' => $data], 201);
+        return $this->json(['post' => $post], 201);
     }
 
     /**
@@ -137,12 +149,11 @@ class PostController extends AbstractController
      * @return Response
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \AutoMapperPlus\Exception\UnregisteredMappingException
      */
     public function deletePost(int $id): Response
     {
         $post = $this->postRepository->delete($id);
-        $post = $this->mapper->map($post, PostResponseDto::class);
+        $post = $this->postAssembly->writeOneDTO($post);
 
         return $this->json(['post' => $post], 200);
     }
