@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "381c0abc569b26bdcf238fffe1e3eb1d",
+    "content-hash": "0b23177e52cbc758c3053b7487771e30",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -1704,114 +1704,6 @@
                 }
             ],
             "time": "2021-02-25T21:54:58+00:00"
-        },
-        {
-            "name": "mark-gerarts/auto-mapper-plus",
-            "version": "1.3.12",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mark-gerarts/automapper-plus.git",
-                "reference": "b35e1a3013f940d84520b794424a84913f5e83ea"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mark-gerarts/automapper-plus/zipball/b35e1a3013f940d84520b794424a84913f5e83ea",
-                "reference": "b35e1a3013f940d84520b794424a84913f5e83ea",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.1.0"
-            },
-            "require-dev": {
-                "mark-gerarts/phpstan-automapper-plus": "^0.1.0",
-                "phpunit/phpunit": "^7.0",
-                "symfony/debug": "^3.3",
-                "symfony/var-dumper": "^3.3"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "AutoMapperPlus\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Mark Gerarts",
-                    "email": "mark.gerarts@gmail.com"
-                }
-            ],
-            "description": "An AutoMapper for PHP",
-            "keywords": [
-                "automapper",
-                "converter",
-                "object-to-object"
-            ],
-            "support": {
-                "issues": "https://github.com/mark-gerarts/automapper-plus/issues",
-                "source": "https://github.com/mark-gerarts/automapper-plus/tree/master"
-            },
-            "time": "2020-05-05T15:01:57+00:00"
-        },
-        {
-            "name": "mark-gerarts/automapper-plus-bundle",
-            "version": "1.3.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mark-gerarts/automapper-plus-bundle.git",
-                "reference": "1183b2b98082b40dab9940c5a17621eeb163ecaa"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mark-gerarts/automapper-plus-bundle/zipball/1183b2b98082b40dab9940c5a17621eeb163ecaa",
-                "reference": "1183b2b98082b40dab9940c5a17621eeb163ecaa",
-                "shasum": ""
-            },
-            "require": {
-                "mark-gerarts/auto-mapper-plus": "^1.3",
-                "php": ">=7.1.0",
-                "symfony/framework-bundle": "^3.4|^4.0|^5.0"
-            },
-            "require-dev": {
-                "matthiasnoback/symfony-dependency-injection-test": "^3.1|^4.1",
-                "phpunit/phpunit": "^7.5|^8.0",
-                "symfony/phpunit-bridge": "^5.0",
-                "symfony/property-access": "^3.4|^4.4|^5.0"
-            },
-            "suggest": {
-                "symfony/property-access": "^3.4|^4.4"
-            },
-            "type": "symfony-bundle",
-            "autoload": {
-                "psr-4": {
-                    "AutoMapperPlus\\AutoMapperPlusBundle\\": [
-                        ""
-                    ]
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Mark Gerarts",
-                    "email": "mark.gerarts@gmail.com"
-                }
-            ],
-            "description": "A Symfony bundle for AutoMapper+",
-            "keywords": [
-                "automapper",
-                "bundle"
-            ],
-            "support": {
-                "issues": "https://github.com/mark-gerarts/automapper-plus-bundle/issues",
-                "source": "https://github.com/mark-gerarts/automapper-plus-bundle/tree/1.3.0"
-            },
-            "time": "2020-04-01T13:52:25+00:00"
         },
         {
             "name": "nikic/php-parser",
