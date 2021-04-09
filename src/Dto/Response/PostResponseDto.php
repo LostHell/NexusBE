@@ -24,16 +24,23 @@ class PostResponseDto
      */
     private $user;
 
+    /**
+     * @var object
+     */
+    private $comment;
+
     public function __construct(
         string $content,
         \DateTimeInterface $date_created,
         \DateTimeInterface $date_last_update,
-        array $user)
+        array $user,
+        object $comment)
     {
         $this->content = $content;
         $this->date_created = $date_created;
         $this->date_last_update = $date_last_update;
         $this->user = $user;
+        $this->comment = $comment;
     }
 
     /**
@@ -66,5 +73,13 @@ class PostResponseDto
     public function getUser(): array
     {
         return $this->user;
+    }
+
+    /**
+     * @return object
+     */
+    public function getComment(): object
+    {
+        return $this->comment;
     }
 }

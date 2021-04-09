@@ -41,11 +41,12 @@ class PostAssembly
             $post->getContent(),
             $post->getDateCreated(),
             $post->getDateLastUpdate(),
-            ['user' => $post->getAuthor()->getUsername(),
+            ['username' => $post->getAuthor()->getUsername(),
                 'fullName' => $post->getAuthor()->getFirstName() . ' ' . $post->getAuthor()->getLastName(),
-                'comments' => $post->getComment()->map(function ($value) {
-                    return $value->getContent();
-                })]
+            ],
+            $post->getComment()->map(function ($value) {
+                return ['content' => $value->getContent(), 'dateCreated' => $value->getDateCreated()];
+            })
         );
     }
 
@@ -62,11 +63,12 @@ class PostAssembly
                 $item->getContent(),
                 $item->getDateCreated(),
                 $item->getDateLastUpdate(),
-                ['user' => $item->getAuthor()->getUsername(),
+                ['username' => $item->getAuthor()->getUsername(),
                     'fullName' => $item->getAuthor()->getFirstName() . ' ' . $item->getAuthor()->getLastName(),
-                    'comments' => $item->getComment()->map(function ($value) {
-                        return ['content' => $value->getContent(), 'dateCreated' => $value->getDateCreated()];
-                    })]
+                ],
+                $item->getComment()->map(function ($value) {
+                    return ['content' => $value->getContent(), 'dateCreated' => $value->getDateCreated()];
+                })
             );
 
             $arrayPosts->add($post);
