@@ -40,7 +40,12 @@ class PostAssembly
         return new PostResponseDto(
             $post->getContent(),
             $post->getDateCreated(),
-            $post->getDateLastUpdate()
+            $post->getDateLastUpdate(),
+            ['user' => $post->getAuthor()->getUsername(),
+                'fullName' => $post->getAuthor()->getFirstName() . ' ' . $post->getAuthor()->getLastName(),
+                'comments' => $post->getComment()->map(function ($value) {
+                    return $value->getContent();
+                })]
         );
     }
 
@@ -56,7 +61,12 @@ class PostAssembly
             $post = new PostResponseDto(
                 $item->getContent(),
                 $item->getDateCreated(),
-                $item->getDateLastUpdate()
+                $item->getDateLastUpdate(),
+                ['user' => $item->getAuthor()->getUsername(),
+                    'fullName' => $item->getAuthor()->getFirstName() . ' ' . $item->getAuthor()->getLastName(),
+                    'comments' => $item->getComment()->map(function ($value) {
+                        return ['content' => $value->getContent(), 'dateCreated' => $value->getDateCreated()];
+                    })]
             );
 
             $arrayPosts->add($post);

@@ -19,6 +19,5 @@
     -> author
     -> date_created
     -> date_lest_updated
-    -> date_lest_updated
     -> comment_in_comment[]
    

@@ -2,16 +2,14 @@
 
 namespace App\Entity;
 
-use App\Repository\PostRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use App\Repository\CommentRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity(repositoryClass=PostRepository::class)
+ * @ORM\Entity(repositoryClass=CommentRepository::class)
  */
-class Post
+class Comment
 {
     /**
      * @ORM\Id
@@ -28,14 +26,14 @@ class Post
     private $content;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="posts")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="comments")
      */
     private $author;
 
     /**
-     * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="posts")
+     * @ORM\ManyToOne(targetEntity=Post::class, inversedBy="comments")
      */
-    private $comments;
+    private $posts;
 
     /**
      * @ORM\Column(type="datetime")
@@ -46,11 +44,6 @@ class Post
      * @ORM\Column(type="datetime")
      */
     private $date_last_update;
-
-    public function __construct()
-    {
-        $this->comments = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -81,22 +74,15 @@ class Post
         return $this;
     }
 
-    /**
-     * @return Collection|Comment[]
-     */
-    public function getComment(): ?Collection
+
+    public function getPost(): ?Post
     {
-        return $this->comments;
+        return $this->posts;
     }
 
-    function addComment(Comment $comment): self
+    public function setPost(Post $posts): self
     {
-        if (!$this->comments->contains($comment)) {
-            $this->comments[] = $comment;
-            $comment->setPost($this);
-        }
-
-        return $this;
+        $this->posts = $posts;
     }
 
     public function getDateCreated(): ?\DateTimeInterface

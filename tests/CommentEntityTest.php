@@ -2,16 +2,16 @@
 
 namespace App\Tests;
 
-use App\Entity\Post;
+use App\Entity\Comment;
 use PHPUnit\Framework\TestCase;
 
-class PostEntityTest extends TestCase
+class CommentEntityTest extends TestCase
 {
     protected $post;
 
     public function setUp(): void
     {
-        $this->post = new Post();
+        $this->post = new Comment();
     }
 
     public function testGettersAndSetters()
