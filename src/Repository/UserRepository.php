@@ -23,7 +23,7 @@ class UserRepository extends ServiceEntityRepository
     /**
      * @return User[]
      */
-    public function getAllUsers()
+    public function getAllUsers(): array
     {
         $users = $this->findAll();
 
@@ -38,7 +38,7 @@ class UserRepository extends ServiceEntityRepository
      * @param int $id
      * @return User
      */
-    public function getUserById(int $id)
+    public function getUserById(int $id): User
     {
         $user = $this->find($id);
 
@@ -55,7 +55,7 @@ class UserRepository extends ServiceEntityRepository
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function create(User $newUser)
+    public function create(User $newUser): User
     {
         $em = $this->getEntityManager();
         $em->persist($newUser);
@@ -71,7 +71,7 @@ class UserRepository extends ServiceEntityRepository
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function update(int $id, User $user)
+    public function update(int $id, User $user): User
     {
         $currentUser = $this->find($id);
 
@@ -94,7 +94,7 @@ class UserRepository extends ServiceEntityRepository
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function delete(int $id)
+    public function delete(int $id): User
     {
         $user = $this->find($id);
 

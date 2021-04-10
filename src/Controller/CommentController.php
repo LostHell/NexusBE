@@ -3,17 +3,18 @@
 namespace App\Controller;
 
 use App\Dto\Assembly\CommentAssembly;
-use App\Entity\Comment;
+use App\Dto\Request\CommentRequestDto;
 use App\Repository\CommentRepository;
-use Doctrine\Common\Collections\ArrayCollection;
+use App\Repository\PostRepository;
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @Route("/comment", name="comment_")
@@ -32,12 +33,33 @@ class CommentController extends AbstractController
      */
     private $commentAssembly;
 
+    /**
+     * @var PostRepository
+     */
+    private $postRepository;
+
+    /**
+     * @var UserRepository
+     */
+    private $userRepository;
+
+    /**
+     * @var ValidatorInterface
+     */
+    private $validator;
+
     public function __construct(
         CommentRepository $commentRepository,
-        CommentAssembly $commentAssembly)
+        CommentAssembly $commentAssembly,
+        PostRepository $postRepository,
+        UserRepository $userRepository,
+        ValidatorInterface $validator)
     {
         $this->commentRepository = $commentRepository;
         $this->commentAssembly = $commentAssembly;
+        $this->postRepository = $postRepository;
+        $this->userRepository = $userRepository;
+        $this->validator = $validator;
     }
 
     /**
@@ -59,17 +81,40 @@ class CommentController extends AbstractController
      */
     public function getCommentById(int $id): Response
     {
-        return $this->json(['comment' => "comment id:$id"]);
+        $comment = $this->commentRepository->getCommentById($id);
+        $comment = $this->commentAssembly->writeOneDTO($comment);
+
+        return $this->json(['comment' => $comment]);
     }
 
     /**
      * @Route("/", name="create", methods={"POST"})
      * @param Request $request
      * @return Response
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function createComment(Request $request): Response
     {
-        return $this->json(['comment' => "new comment - created"]);
+        $serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
+        $newComment = $serializer->deserialize($request->getContent(), CommentRequestDto::class, 'json');
+
+        $post = $this->postRepository->getPostById($newComment->getPostId());
+        $user = $this->userRepository->getUserById($newComment->getAuthorId());
+
+        $newComment = $this->commentAssembly->readDTO($newComment, null, $post, $user);
+
+        $errors = $this->validator->validate($newComment);
+
+        if (count($errors) > 0) {
+            return $this->json($errors);
+        }
+
+        $comment = $this->commentRepository->create($newComment);
+
+        $comment = $this->commentAssembly->writeOneDTO($comment);
+
+        return $this->json(['comment' => $comment]);
     }
 
     /**
@@ -77,19 +122,41 @@ class CommentController extends AbstractController
      * @param int $id
      * @param Request $request
      * @return Response
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function updateComment(int $id, Request $request): Response
     {
-        return $this->json(['comment' => "comment with id: $id was updated"]);
+        $serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
+        $currentComment = $serializer->deserialize($request->getContent(), CommentRequestDto::class, 'json');
+
+        $currentComment = $this->commentAssembly->readDTO($currentComment);
+
+        $errors = $this->validator->validate($currentComment);
+
+        if (count($errors) > 0) {
+            return $this->json($errors);
+        }
+
+        $comment = $this->commentRepository->update($id, $currentComment);
+
+        $comment = $this->commentAssembly->writeOneDTO($comment);
+
+        return $this->json(['comment' => $comment]);
     }
 
     /**
      * @Route("/{id}", name="delete", methods={"DELETE"})
      * @param int $id
      * @return Response
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function deleteComment(int $id): Response
     {
-        return $this->json(['comment' => "comment with id: $id was deleted"]);
+        $comment = $this->commentRepository->delete($id);
+        $comment = $this->commentAssembly->writeOneDTO($comment);
+
+        return $this->json(['comment' => $comment]);
     }
 }
