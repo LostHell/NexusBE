@@ -33,4 +33,76 @@ class CommentRepository extends ServiceEntityRepository
 
         return $comments;
     }
+
+    /**
+     * @param int $id
+     * @return Comment
+     */
+    public function getCommentById(int $id): Comment
+    {
+        $comment = $this->find($id);
+
+        if (is_null($comment)) {
+            throw new NotFoundHttpException("Comment with id: $id not found!");
+        }
+
+        return $comment;
+    }
+
+    /**
+     * @param Comment $comment
+     * @return Comment
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function create(Comment $comment): Comment
+    {
+        $comment->setDateCreated(new \DateTime());
+        $comment->setDateLastUpdate(new \DateTime());
+
+        $em = $this->getEntityManager();
+        $em->persist($comment);
+        $em->flush();
+
+        return $comment;
+    }
+
+
+    /**
+     * @param int $id
+     * @param Comment $comment
+     * @return Comment
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function update(int $id, Comment $comment): Comment
+    {
+        $currentComment = $this->find($id);
+
+        $currentComment->setContent($comment->getContent());
+        $currentComment->setDateLastUpdate(new \DateTime());
+
+        $em = $this->getEntityManager();
+        $em->persist($currentComment);
+        $em->flush();
+
+        return $currentComment;
+    }
+
+    /**
+     * @param int $id
+     * @return Comment
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function delete(int $id): Comment
+    {
+        $comment = $this->find($id);
+
+        $em = $this->getEntityManager();
+        $em->remove($comment);
+        $em->flush();
+
+        return $comment;
+    }
 }

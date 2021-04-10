@@ -2,27 +2,39 @@
 
 namespace App\Dto\Assembly;
 
+use App\Dto\Request\CommentRequestDto;
 use App\Dto\Response\CommentResponseDto;
 use App\Entity\Comment;
 use App\Entity\Post;
+use App\Entity\User;
 use Doctrine\Common\Collections\ArrayCollection;
 
 class CommentAssembly
 {
     /**
-     * @param CommentResponseDto $dto
+     * @param CommentRequestDto $dto
      * @param Comment|null $comment
      * @param Post|null $post
+     * @param User|null $user
      * @return Comment|null
      */
-    public function readDTO(CommentResponseDto $dto, ?Comment $comment, ?Post $post): ?Comment
+    public function readDTO(
+        CommentRequestDto $dto,
+        ?Comment $comment = null,
+        ?Post $post = null,
+        ?User $user = null): ?Comment
     {
         if (!$comment) {
             $comment = new Comment();
         }
 
         $comment->setContent($dto->getContent());
-        $post->addComment($comment);
+        if ($post) {
+            $post->addComment($comment);
+        }
+        if ($user) {
+            $user->addComment($comment);
+        }
 
         return $comment;
     }

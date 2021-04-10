@@ -23,7 +23,7 @@ class PostRepository extends ServiceEntityRepository
     /**
      * @return Post[]
      */
-    public function getAllPosts()
+    public function getAllPosts(): array
     {
         $posts = $this->findAll();
 
@@ -38,7 +38,7 @@ class PostRepository extends ServiceEntityRepository
      * @param int $id
      * @return Post
      */
-    public function getPostById(int $id)
+    public function getPostById(int $id): Post
     {
         $post = $this->find($id);
 
@@ -55,7 +55,7 @@ class PostRepository extends ServiceEntityRepository
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function create(Post $post)
+    public function create(Post $post): Post
     {
         $post->setDateCreated(new \DateTime());
         $post->setDateLastUpdate(new \DateTime());
@@ -74,7 +74,7 @@ class PostRepository extends ServiceEntityRepository
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function update(int $id, Post $post)
+    public function update(int $id, Post $post): Post
     {
         $currentPost = $this->find($id);
 
@@ -95,7 +95,7 @@ class PostRepository extends ServiceEntityRepository
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function delete(int $id)
+    public function delete(int $id): Post
     {
         $post = $this->find($id);
 

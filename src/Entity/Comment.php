@@ -74,7 +74,6 @@ class Comment
         return $this;
     }
 
-
     public function getPost(): ?Post
     {
         return $this->posts;
@@ -83,6 +82,8 @@ class Comment
     public function setPost(Post $posts): self
     {
         $this->posts = $posts;
+
+        return $this;
     }
 
     public function getDateCreated(): ?\DateTimeInterface
