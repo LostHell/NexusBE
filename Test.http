@@ -1,0 +1,24 @@
+GET http://127.0.0.1:8000/user/
+Accept: application/json
+
+###
+
+GET http://127.0.0.1:8000/user/1
+Accept: application/json
+
+###
+
+POST http://127.0.0.1:8000/user/
+Accept: application/json
+Content-Type: application/json
+
+{
+  "first_name": "Enes",
+  "last_name": "Karadzhov",
+  "email": "enes.karadzhov@gmail.com",
+  "username": "qwertrewqwertrewq",
+  "password": "qwertyuytrewe",
+  "posts": {
+    "content": "dadadada"
+  }
+}
